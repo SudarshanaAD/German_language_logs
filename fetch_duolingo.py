@@ -8,7 +8,7 @@ headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
 }
 
-# Explicitly calling Duolingo's structured API endpoint instead of the webpage
+# Pointing explicitly to Duolingo's open API data route
 url = f"https://duolingo.com/{DUOLINGO_USERNAME}"
 print(f"[DEBUG 1] Target URL verification: {url}")
 
@@ -26,7 +26,7 @@ if not user_list or len(user_list) == 0:
     print(f"[ERROR] Profile '{DUOLINGO_USERNAME}' not found.")
     exit(1)
 
-# Extract statistics cleanly from the first profile dictionary item inside the list array
+# Extract statistics cleanly from the first item in the user list array
 user_info = user_list[0]
 streak = user_info.get('streak', 0)
 total_xp = user_info.get('totalXp', 0)
