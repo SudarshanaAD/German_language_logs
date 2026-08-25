@@ -1,8 +1,8 @@
 name: Generate Daily Duolingo Logs
 on:
   schedule:
-    - cron: '0 0 * * *' # Triggers automatically every midnight
-  workflow_dispatch: # Allows you to manually click "Run workflow" to test it
+    - cron: '0 0 * * *'
+  workflow_dispatch:
 
 jobs:
   build-and-log:
@@ -16,13 +16,7 @@ jobs:
       with:
         python-version: '3.10'
 
-    - name: Install Duolingo API dependencies
-      run: pip install duolingo-api
-
     - name: Execute log generator script
-      env:
-        DUOLINGO_USERNAME: ${{ secrets.DUOLINGO_USERNAME }}
-        DUOLINGO_PASSWORD: ${{ secrets.DUOLINGO_PASSWORD }}
       run: python fetch_duolingo.py
 
     - name: Commit and push changes back to main branch
