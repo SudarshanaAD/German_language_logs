@@ -114,6 +114,31 @@ This chart shows total XP gained each day over the past week.
 
 {summary_table}
 """
+profile_readme = "README.md"  # root profile README
+with open(profile_readme, "r", encoding="utf-8") as f:
+    readme_lines = f.read()
+
+new_stats = f"""
+<!--START_SECTION:duolingoStats-->
+![Duolingo Streak Badge](https://img.shields.io/badge/Duolingo_Streak-{streak}_days-brightgreen?logo=duolingo)
+
+- **XP:** {total_xp}
+- **Streak:** {streak} days 🔥
+<!--END_SECTION:duolingoStats-->
+"""
+
+import re
+updated_readme = re.sub(
+    r"<!--START_SECTION:duolingoStats-->.*<!--END_SECTION:duolingoStats-->",
+    new_stats,
+    readme_lines,
+    flags=re.DOTALL
+)
+
+with open(profile_readme, "w", encoding="utf-8") as f:
+    f.write(updated_readme)
+
+print("[SUCCESS] Profile README updated with live Duolingo stats.")
 
 with open(summary_path, "w", encoding="utf-8") as f:
     f.write(weekly_content)
