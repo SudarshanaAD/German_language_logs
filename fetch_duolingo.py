@@ -16,7 +16,7 @@ if response.status_code == 200:
     data = response.json()
     
     if data.get('users') and len(data['users']) > 0:
-        user_info = data['users'][0] # Grabs the profile index object
+            user_info = data['users'][0] # Grabs the profile index object
         
         streak = user_info.get('streak', 0)
         total_xp = user_info.get('totalXp', 0)
