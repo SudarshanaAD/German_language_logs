@@ -29,3 +29,13 @@ jobs:
         mkdir -p German_language_logs
         git add .
         git diff-index --quiet HEAD || (git commit -m "Auto-generated log for $(date +'%Y-%m-%d')" && git push)
+    - name: Push stats to profile repo
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git clone https://x-access-token:${{ secrets.PROFILE_TOKEN }}@github.com/SudarshanaAD/SudarshanaAD.git profile-repo
+        cp README.md profile-repo/README.md   # copy updated root README into profile repo
+        cd profile-repo
+        git add README.md
+        git commit -m "Update Duolingo stats from German_language_logs workflow" || echo "No changes to commit"
+        git push
