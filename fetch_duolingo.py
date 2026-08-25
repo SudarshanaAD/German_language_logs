@@ -2,14 +2,13 @@ import os
 import datetime
 import requests
 
-# Your exact username
 DUOLINGO_USERNAME = 'Sudarshan2112' 
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
 }
 
-# Notice the exact question mark and username query format here
+# Clean, official API endpoint layout
 url = f"https://duolingo.com{DUOLINGO_USERNAME}"
 response = requests.get(url, headers=headers)
 
@@ -17,7 +16,7 @@ if response.status_code == 200:
     data = response.json()
     
     if data.get('users') and len(data['users']) > 0:
-        user_info = data['users'][0]
+        user_info = data['users'][0] # Grabs the profile index object
         
         streak = user_info.get('streak', 0)
         total_xp = user_info.get('totalXp', 0)
