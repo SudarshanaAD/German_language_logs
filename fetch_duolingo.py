@@ -2,107 +2,116 @@ import os
 import datetime
 import requests
 
-DUOLINGO_USERNAME = 'Sudarshan2112' 
+DUOLINGO_USERNAME = "Sudarshan2112"
 
 headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                  "AppleWebKit/537.36 (KHTML, like Gecko) "
+                  "Chrome/120.0.0.0 Safari/537.36"
 }
 
-# 1. Fetch live metrics from the Duolingo API
-url = f"https://duolingo.com{DUOLINGO_USERNAME}"
+# ✅ Correct JSON endpoint
+url = f"https://www.duolingo.com/2017-06-30/users?username={DUOLINGO_USERNAME}"
+print(f"[DEBUG 1] Target URL verification: {url}")
+
 response = requests.get(url, headers=headers)
+print(f"[DEBUG 2] Connection code: {response.status_code}")
 
 if response.status_code != 200:
-    print(f"[ERROR] Failed to connect to Duolingo. Code: {response.status_code}")
+    print("[ERROR] Connection to API endpoint failed.")
     exit(1)
 
-data = response.json()
-user_list = data.get('users', [])
+try:
+    data = response.json()
+except ValueError:
+    print("[ERROR] Response was not JSON. Raw output:")
+    print(response.text[:500])
+    exit(1)
 
+user_list = data.get("users", [])
 if not user_list:
     print(f"[ERROR] Profile '{DUOLINGO_USERNAME}' not found.")
     exit(1)
 
+# ✅ Extract stats
 user_info = user_list[0]
-streak = user_info.get('streak', 0)
-total_xp = user_info.get('totalXp', 0)
+streak = user_info.get("streak", 0)
+total_xp = user_info.get("totalXp", 0)
+print(f"[DEBUG 3] Parsing confirmation -> Streak: {streak}, XP: {total_xp}")
 
-# 2. Date parsing variables
+# ✅ Daily log file
 today_dash = datetime.datetime.now().strftime("%Y-%m-%d")
 today_text = datetime.datetime.now().strftime("%d %b %Y")
-weekday_name = datetime.datetime.now().strftime("%A")
 
-# 3. Create individual milestone diary markdown logs
 log_dir = "German_language_logs"
 os.makedirs(log_dir, exist_ok=True)
-diary_path = os.path.join(log_dir, f"{today_dash}.md")
+file_path = os.path.join(log_dir, f"{today_dash}.md")
 
-diary_content = f"""# Duolingo Progress – {today_text}
+markdown_content = f"""# Duolingo Progress – {today_text}
+
 * **XP Score:** {total_xp} Duolingo XP
 * **Streak:** {streak} days 🔥
 * **Notes:** Automated daily check-in logs.
 """
-with open(diary_path, "w", encoding="utf-8") as f:
-    f.write(diary_content)
 
-# 4. Handle structural weekly rolling metrics tracking ledger
-weekly_ledger_path = os.path.join(log_dir, "weekly_rolling_tracker.txt")
-history_lines = []
+with open(file_path, "w", encoding="utf-8") as f:
+    f.write(markdown_content)
 
-if os.path.exists(weekly_ledger_path):
-    with open(weekly_ledger_path, "r", encoding="utf-8") as f:
-        history_lines = [line.strip() for line in f.readlines() if line.strip()]
+print(f"[SUCCESS] File generated: {file_path}")
 
-# Append today's statistics log snapshot entry
-history_lines.append(f"{today_text} ({weekday_name})|{total_xp}")
+# ✅ Update README.md with live streak badge
+readme_path = os.path.join(log_dir, "README.md")
+badge_url = f"https://img.shields.io/badge/Duolingo_Streak-{streak}_days-brightgreen?logo=duolingo"
 
-# Keep a maximum rolling historical window of the last 7 entries
-if len(history_lines) > 7:
-    history_lines = history_lines[-7:]
+readme_content = f"""# German_language_logs
 
-with open(weekly_ledger_path, "w", encoding="utf-8") as f:
-    f.write("\n".join(history_lines))
+This repository tracks my weekly progress in learning German from A1 level, including vocabulary logs, grammar notes, and reflections.
 
-# 5. Build dynamic table layout strings for your README
-table_rows = ""
-for i in range(1, len(history_lines)):
-    try:
-        prev_date, prev_xp = history_lines[i-1].split("|")
-        curr_date, curr_xp = history_lines[i].split("|")
-        day_gained = int(curr_xp) - int(prev_xp)
-        if day_gained < 0: day_gained = 0 # Safety reset for edge cases
-        table_rows += f"| {curr_date.split(' (')[0]} | {curr_xp} XP | +{day_gained} XP |\n"
-    except Exception:
-        continue
+![Duolingo Streak Badge]({badge_url})
 
-if not table_rows:
-    table_rows = f"| {today_text} | {total_xp} XP | Logging initialization... |\n"
-
-# 6. Overwrite the main README file completely to include the stats interface dashboard
-readme_content = f"""# German Language Tracking Logs 🇩🇪
-
-This repository automatically maintains my weekly progress tracking ledger from Duolingo. It dynamically updates metrics using custom Python-driven GitHub Actions.
-
----
-
-### 📊 Live Metric Tracker Dashboard
-
-| Current Streak 🔥 | Total Accumulated Volume 📈 | Last Dynamic Run Update ⏱️ |
-| :--- | :--- | :--- |
-| **{streak} Days Active** | **{total_xp} Total XP** | {today_text} ({weekday_name}) |
-
----
-
-### 📅 Weekly XP Generation Log Summary
-
-| Day / Date | Accumulated Level Baseline | Net Daily Performance |
-| :--- | :--- | :--- |
-{table_rows}
----
-*Automated reporting generated via background scripts.*
+## Current Stats
+- **XP:** {total_xp}
+- **Streak:** {streak} days 🔥
 """
 
-with open("README.md", "w", encoding="utf-8") as f:
+with open(readme_path, "w", encoding="utf-8") as f:
     f.write(readme_content)
 
-print("[SUCCESS] Layout updating complete.")
+print(f"[SUCCESS] README updated with streak badge.")
+
+# ✅ Weekly summary chart (XP gained per day)
+summary_path = os.path.join(log_dir, "weekly_summary.md")
+
+# Load past 7 logs
+xp_data = []
+for i in range(7):
+    day = datetime.datetime.now() - datetime.timedelta(days=i)
+    fname = os.path.join(log_dir, f"{day.strftime('%Y-%m-%d')}.md")
+    if os.path.exists(fname):
+        with open(fname, "r", encoding="utf-8") as f:
+            content = f.read()
+            # crude parse: look for XP line
+            for line in content.splitlines():
+                if "XP Score:" in line:
+                    xp_val = int(line.split()[2])  # extract XP number
+                    xp_data.append((day.strftime("%d %b"), xp_val))
+
+# Sort oldest → newest
+xp_data = sorted(xp_data, key=lambda x: datetime.datetime.strptime(x[0], "%d %b"))
+
+# Build summary table
+summary_table = "| Date | XP |\n|------|----|\n"
+for date, xp in xp_data:
+    summary_table += f"| {date} | {xp} |\n"
+
+weekly_content = f"""# Weekly XP Summary
+
+This chart shows total XP gained each day over the past week.
+
+{summary_table}
+"""
+
+with open(summary_path, "w", encoding="utf-8") as f:
+    f.write(weekly_content)
+
+print(f"[SUCCESS] Weekly summary generated: {summary_path}")
