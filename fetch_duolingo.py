@@ -92,8 +92,6 @@ for i in range(7):
             content = f.read()
             # crude parse: look for XP line
             for line in content.splitlines():
-                if "XP Score:" in line:
-                    xp_val = int(line.split()[2])  # extract XP number
                     import re
                     if "XP Score:" in line:
                         match = re.search(r"(\d+)", line)
