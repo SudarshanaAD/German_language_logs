@@ -9,7 +9,7 @@ headers = {
 }
 
 # Explicitly calling Duolingo's structured API endpoint instead of the webpage
-url = f"https://duolingo.com{DUOLINGO_USERNAME}"
+url = f"https://duolingo.com/{DUOLINGO_USERNAME}"
 print(f"[DEBUG 1] Target URL verification: {url}")
 
 response = requests.get(url, headers=headers)
