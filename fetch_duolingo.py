@@ -94,7 +94,13 @@ for i in range(7):
             for line in content.splitlines():
                 if "XP Score:" in line:
                     xp_val = int(line.split()[2])  # extract XP number
-                    xp_data.append((day.strftime("%d %b"), xp_val))
+                    import re
+                    if "XP Score:" in line:
+                        match = re.search(r"(\d+)", line)
+                        if match:
+                            xp_val = int(match.group(1))
+                            xp_data.append((day.strftime("%d %b"), xp_val))
+
 
 # Sort oldest → newest
 xp_data = sorted(xp_data, key=lambda x: datetime.datetime.strptime(x[0], "%d %b"))
