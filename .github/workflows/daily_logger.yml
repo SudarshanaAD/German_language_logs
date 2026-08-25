@@ -16,6 +16,9 @@ jobs:
       with:
         python-version: '3.10'
 
+    - name: Install required HTTP library
+      run: pip install requests
+
     - name: Execute log generator script
       run: python fetch_duolingo.py
 
