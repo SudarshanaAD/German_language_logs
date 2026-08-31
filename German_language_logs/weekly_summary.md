@@ -10,4 +10,5 @@ This chart shows total XP gained each day over the past week.
 | 28 Aug | 11524 |
 | 29 Aug | 11582 |
 | 30 Aug | 11582 |
+| 31 Aug | 11611 |
 
