@@ -4,11 +4,11 @@ This chart shows total XP gained each day over the past week.
 
 | Date | XP |
 |------|----|
-| 21 Sep | 12226 |
 | 22 Sep | 12226 |
 | 23 Sep | 12226 |
 | 24 Sep | 12226 |
 | 25 Sep | 12226 |
 | 26 Sep | 12226 |
 | 27 Sep | 12256 |
+| 28 Sep | 12256 |
 
