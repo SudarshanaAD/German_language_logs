@@ -5,5 +5,5 @@ This repository tracks my weekly progress in learning German from A1 level, incl
 ![Duolingo Streak Badge](https://img.shields.io/badge/Duolingo_Streak-157_days-brightgreen?logo=duolingo)
 
 ## Current Stats
-- **XP:** 29199
+- **XP:** 29849
 - **Streak:** 157 days 🔥
